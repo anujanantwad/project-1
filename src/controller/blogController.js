@@ -23,8 +23,8 @@ const createBlog = async function(req,res){
                 {return res.status(400).send({status: false, msg: "AuthorId must be present."})}
 
     
-  if(id!=authorId._id)
-              {return res.status(400).send("Invalid Author")}
+  if(!authorId)
+              {return res.status(400).send("Invalid authorId pleas give a valid authorId")}
   if(!data.category)
               {return res.status(400).send({status: false, msg: "Category must be present."})}
 
@@ -47,10 +47,11 @@ catch(err){
 const getBlogs = async function (req, res) {
     try {
       let data = req.query;
+      console.log(data)
   
       
       let GetRecord = await blogModel.find({
-        $and: [{ isPublished: true, isDeleted: false, ...data }], 
+        $and: [{ isPublished: true, isDeleted: false, data }], 
       })
       if (GetRecord.length == 0) {
         return res.status(404).send({
@@ -106,8 +107,35 @@ const getBlogs = async function (req, res) {
     }
 }
 
+const deleteBlogQuery = async function(req,res){
+  try{
+    let data = req.query
+    
+    
+    if(!Object.keys(data).length) 
+        return res.status(400).send({status: false, msg: "Please select some key for deletion."})
+   
+
+    let blogs = await blogModel.updateMany({data, isDeleted: false,isPublished: false},{isDeleted:true, deletedAt: Date.now()},{new:true})
+    if(!blogs.modifiedCount) 
+        return res.status(404).send({status: false, msg: "No documents Modifued"})
+    
+    res.status(200).send({status:true,msg:"Documnet is  deleted"})
+
+    
+    
+
+}
+catch(err){
+    console.log(err)
+    res.status(500).send({status:false, msg: err.message})
+}
+}
+
+
 
 module.exports.createBlog = createBlog
 module.exports.getBlogs = getBlogs
 module.exports.updateBlogs = updateBlogs
 module.exports.deleteBlogs = deleteBlogs
+module.exports.deleteBlogQuery = deleteBlogQuery

@@ -15,6 +15,7 @@ router.post("/createBlog",blogController.createBlog)
 router.get("/blogs",blogController.getBlogs)
 router.put("/blogs/:blogId",blogController.updateBlogs)
 router.delete("/blog/:blogId",blogController.deleteBlogs)
+router.delete("/blog",blogController.deleteBlogQuery)
 
 module.exports = router;
 // adding this comment for no reason
